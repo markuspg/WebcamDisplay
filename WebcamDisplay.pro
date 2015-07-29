@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,6 +17,11 @@ SOURCES += main.cpp\
 
 HEADERS  += webcamdisplay.h
 
-FORMS    += webcamdisplay.ui
+FORMS    += webcamdisplay.ui \
+    authenticationdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11
+
+OTHER_FILES += \
+    LICENSE \
+    README.md
