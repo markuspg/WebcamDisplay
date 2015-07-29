@@ -12,13 +12,13 @@ TARGET = WebcamDisplay
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        webcamdisplay.cpp
+SOURCES += src/main.cpp\
+        src/webcamdisplay.cpp
 
-HEADERS  += webcamdisplay.h
+HEADERS  += src/webcamdisplay.h
 
-FORMS    += webcamdisplay.ui \
-    authenticationdialog.ui
+FORMS    += ui/webcamdisplay.ui \
+    ui/authenticationdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 
