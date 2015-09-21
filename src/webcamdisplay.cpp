@@ -90,6 +90,7 @@ void MWWebcamDisplay::httpFinished() {
     recentImage = currentImage;
     currentImage = scene.addPixmap( image );
     delete recentImage;
+    recentImage = nullptr;
     ui->GVImageDisplay->fitInView( scene.itemsBoundingRect(), Qt::KeepAspectRatio );
 
     delete byteArray;
