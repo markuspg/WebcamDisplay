@@ -39,25 +39,22 @@ public:
     ~MWWebcamDisplay();
 
 private:
-    QFile *file = nullptr;
-    QFileInfo fileInfo;
-    QString fileName;
+    QByteArray *byteArray = nullptr;
+    QGraphicsPixmapItem *currentImage = nullptr;    //! Pointer to the currently displayed image pixmap
     bool httpRequestAborted = false;
-    QTimer pingTimer;
     QNetworkAccessManager qnam;
+    QGraphicsPixmapItem *recentImage = nullptr;     //! Pointer to the previously displayed image pixmap
+    QTimer refreshTimer;
     QNetworkReply *reply = nullptr;
-    QGraphicsScene scene;                       //! Surface to store the image data
-    QGraphicsPixmapItem *tempItem = nullptr;    //! Pointer to the recently displayed image pixmap
+    QGraphicsScene scene;                           //! Surface to store the image data
     Ui::MWWebcamDisplay *ui;
     QUrl webcamURL;
 
 private slots:
     void AuthenticationRequired( QNetworkReply*, QAuthenticator *authenticator );
-    void DownloadFile();
     void httpFinished();
-    void httpReadyRead();
     void SSLErrors( QNetworkReply*, const QList<QSslError> &errors );
-    void StartRequest( QUrl argWebcamURL );
+    void StartRequest();
 };
 
 #endif // WEBCAMDISPLAY_H
