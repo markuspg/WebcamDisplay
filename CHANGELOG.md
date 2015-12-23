@@ -8,6 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 ### Removed
 
+## [3.0.1] - 2015-12-23
+### Changed
+- Minor refactoring work
+- Utilized std::unique_ptr
+
 ## [3.0.0] - 2015-10-05
 ### Added
 - Documentation about the purpose and the build process of WebcamDisplay

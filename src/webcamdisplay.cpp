@@ -39,75 +39,68 @@ MWWebcamDisplay::MWWebcamDisplay( const QString &argWebcamURL, QWidget *argParen
 
     connect( &refreshTimer, &QTimer::timeout,
              this, &MWWebcamDisplay::StartRequest );
-    StartRequest();
     refreshTimer.start( 1000 );
 }
 
 MWWebcamDisplay::~MWWebcamDisplay() {
+    scene.removeItem( currentImage.get() );
     delete ui;
-    delete currentImage;
-    delete recentImage;
 }
 
-void MWWebcamDisplay::AuthenticationRequired( QNetworkReply*, QAuthenticator *authenticator ) {
+void MWWebcamDisplay::AuthenticationRequired( QNetworkReply*, QAuthenticator *argAuthenticator ) {
     QDialog dialog;
     Ui::Dialog ui;
     ui.setupUi( &dialog );
-    ui.LSiteDescription->setText( tr( "%1 at %2" ).arg( authenticator->realm() ).arg( webcamURL.host() ) );
+    ui.LSiteDescription->setText( tr( "%1 at %2" ).arg( argAuthenticator->realm() ).arg( webcamURL.host() ) );
 
     ui.LEUsername->setText( webcamURL.userName() );
     ui.LEPassword->setText( webcamURL.password() );
 
     if ( dialog.exec() == QDialog::Accepted ) {
-        authenticator->setUser( ui.LEUsername->text() );
-        authenticator->setPassword( ui.LEPassword->text() );
+        argAuthenticator->setUser( ui.LEUsername->text() );
+        argAuthenticator->setPassword( ui.LEPassword->text() );
     }
 }
 
-void MWWebcamDisplay::httpFinished() {
-    QVariant redirection_target = reply->attribute( QNetworkRequest::RedirectionTargetAttribute );
+void MWWebcamDisplay::HttpFinished() {
+    QVariant redirectionTarget = reply->attribute( QNetworkRequest::RedirectionTargetAttribute );
     if ( reply->error() ) {
         QMessageBox::information( this, tr( "HTTP" ), tr( "Download failed: %1." ).arg( reply->errorString() ) );
     }
-    else if ( !redirection_target.isNull() ) {
-        QUrl newURL = webcamURL.resolved( redirection_target.toUrl() );
+    else if ( !redirectionTarget.isNull() ) {
+        QUrl newURL = webcamURL.resolved( redirectionTarget.toUrl() );
         if ( QMessageBox::question( this, tr( "HTTP" ), tr( "Redirect to '%1'?" ).arg( newURL.toString() ),
                                     QMessageBox::No | QMessageBox::Yes ) == QMessageBox::Yes ) {
             webcamURL = newURL;
             reply->deleteLater();
             reply = nullptr;
-            StartRequest();
             return;
         }
     }
 
-    byteArray = new QByteArray{ reply->readAll() };
+    byteArray.reset( new QByteArray{ reply->readAll() } );
     reply->deleteLater();
     reply = nullptr;
 
     QPixmap image;
     image.loadFromData( *byteArray );
-    recentImage = currentImage;
-    currentImage = scene.addPixmap( image );
-    delete recentImage;
-    recentImage = nullptr;
+    recentImage.reset( currentImage.release() );
+    currentImage.reset( scene.addPixmap( image ) );
+    scene.removeItem( recentImage.get() );
     ui->GVImageDisplay->fitInView( scene.itemsBoundingRect(), Qt::KeepAspectRatio );
-
-    delete byteArray;
-    byteArray = nullptr;
 }
 
 void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors ) {
-    QString error_string;
+    QString errorString;
     foreach ( const QSslError &error, errors ) {
-        if ( !error_string.isEmpty() ) {
-            error_string += ", ";
+        if ( !errorString.isEmpty() ) {
+            errorString += ", ";
         }
-        error_string += error.errorString();
+        errorString += error.errorString();
     }
 
     if ( QMessageBox::warning( this, tr( "HTTP" ),
-                               tr( "One or more SSL errors occurred: %1" ).arg( error_string ),
+                               tr( "One or more SSL errors occurred: %1" ).arg( errorString ),
                                QMessageBox::Ignore | QMessageBox::Abort ) == QMessageBox::Ignore ) {
         reply->ignoreSslErrors();
     }
@@ -116,5 +109,5 @@ void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors 
 void MWWebcamDisplay::StartRequest() {
     reply = qnam.get( QNetworkRequest( webcamURL ) );
 
-    connect( reply, SIGNAL( finished() ), this, SLOT( httpFinished() ) );
+    connect( reply, SIGNAL( finished() ), this, SLOT( HttpFinished() ) );
 }

@@ -26,24 +26,30 @@
 #include <QtNetwork>
 #include <QtWidgets>
 
+#include <memory>
+
 namespace Ui {
 class MWWebcamDisplay;
 }
 
-class MWWebcamDisplay : public QMainWindow
-{
+class MWWebcamDisplay final : public QMainWindow {
     Q_OBJECT
 
 public:
     explicit MWWebcamDisplay( const QString &argWebcamURL, QWidget *argParent = nullptr );
+    MWWebcamDisplay( const MWWebcamDisplay &argWebcamDisplay ) = delete;
+    MWWebcamDisplay( MWWebcamDisplay &&argWebcamDisplay ) = delete;
     ~MWWebcamDisplay();
 
+    MWWebcamDisplay& operator=( const MWWebcamDisplay &argWebcamDisplay ) = delete;
+    MWWebcamDisplay& operator=( MWWebcamDisplay &&argWebcamDisplay ) = delete;
+
 private:
-    QByteArray *byteArray = nullptr;
-    QGraphicsPixmapItem *currentImage = nullptr;    //! Pointer to the currently displayed image pixmap
+    std::unique_ptr< QByteArray > byteArray = nullptr;
+    std::unique_ptr< QGraphicsPixmapItem > currentImage = nullptr;  //! Pointer to the currently displayed image pixmap
     bool httpRequestAborted = false;
     QNetworkAccessManager qnam;
-    QGraphicsPixmapItem *recentImage = nullptr;     //! Pointer to the previously displayed image pixmap
+    std::unique_ptr< QGraphicsPixmapItem > recentImage = nullptr;   //! Pointer to the previously displayed image pixmap
     QTimer refreshTimer;
     QNetworkReply *reply = nullptr;
     QGraphicsScene scene;                           //! Surface to store the image data
@@ -51,8 +57,8 @@ private:
     QUrl webcamURL;
 
 private slots:
-    void AuthenticationRequired( QNetworkReply*, QAuthenticator *authenticator );
-    void httpFinished();
+    void AuthenticationRequired( QNetworkReply*, QAuthenticator *argAuthenticator );
+    void HttpFinished();
     void SSLErrors( QNetworkReply*, const QList<QSslError> &errors );
     void StartRequest();
 };
