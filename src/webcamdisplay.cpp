@@ -54,7 +54,9 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
 }
 
 MWWebcamDisplay::~MWWebcamDisplay() {
-    scene->removeItem(currentImage.get());
+    if (currentImage) {
+        scene->removeItem(currentImage.get());
+    }
     delete ui;
 }
 
@@ -83,7 +85,7 @@ void MWWebcamDisplay::HttpFinished() {
         QMessageBox::information(this, tr("HTTP"),
                                  tr("Download failed: %1.").arg(reply->errorString()));
     } else if (!redirectionTarget.isNull()) {
-        QUrl newURL = webcamURL->resolved(redirectionTarget.toUrl());
+        const QUrl newURL = webcamURL->resolved(redirectionTarget.toUrl());
         if (QMessageBox::question(this, tr("HTTP"),
                                   tr("Redirect to '%1'?").arg(newURL.toString()),
                                   QMessageBox::No | QMessageBox::Yes)
@@ -103,7 +105,9 @@ void MWWebcamDisplay::HttpFinished() {
     image.loadFromData(replyByteArray);
     recentImage.reset(currentImage.release());
     currentImage.reset(scene->addPixmap(image));
-    scene->removeItem(recentImage.get());
+    if (recentImage) {
+        scene->removeItem(recentImage.get());
+    }
     ui->GVImageDisplay->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
