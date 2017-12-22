@@ -58,7 +58,10 @@ MWWebcamDisplay::~MWWebcamDisplay() {
     delete ui;
 }
 
-void MWWebcamDisplay::AuthenticationRequired(QNetworkReply*, QAuthenticator *argAuthenticator) {
+void MWWebcamDisplay::AuthenticationRequired(QNetworkReply *argReply,
+                                             QAuthenticator *argAuthenticator) {
+    Q_UNUSED(argReply)
+
     QDialog dialog;
     Ui::Dialog ui;
     ui.setupUi(&dialog);
@@ -74,6 +77,7 @@ void MWWebcamDisplay::AuthenticationRequired(QNetworkReply*, QAuthenticator *arg
 }
 
 void MWWebcamDisplay::HttpFinished() {
+    QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if (reply->error()) {
         QMessageBox::information(this, tr("HTTP"),
@@ -103,7 +107,8 @@ void MWWebcamDisplay::HttpFinished() {
     ui->GVImageDisplay->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
-void MWWebcamDisplay::SSLErrors(QNetworkReply*, const QList<QSslError> &errors) {
+void MWWebcamDisplay::SSLErrors(QNetworkReply *argReply,
+                                const QList<QSslError> &errors) {
     QString errorString;
     for (auto cit = errors.constBegin(); cit != errors.constEnd(); ++cit) {
         if ( !errorString.isEmpty() ) {
@@ -114,13 +119,14 @@ void MWWebcamDisplay::SSLErrors(QNetworkReply*, const QList<QSslError> &errors) 
 
     if (QMessageBox::warning(this, tr("HTTP"),
                                tr("One or more SSL errors occurred: %1").arg(errorString),
-                               QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore) {
-        reply->ignoreSslErrors();
+                               QMessageBox::Ignore | QMessageBox::Abort)
+        == QMessageBox::Ignore) {
+        argReply->ignoreSslErrors();
     }
 }
 
 void MWWebcamDisplay::StartRequest() {
-    reply = qnam->get(QNetworkRequest{*webcamURL});
+    QNetworkReply * const reply = qnam->get(QNetworkRequest{*webcamURL});
 
     connect(reply, &QNetworkReply::finished,
             this, &MWWebcamDisplay::HttpFinished);

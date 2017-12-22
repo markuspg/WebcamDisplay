@@ -57,16 +57,15 @@ private:
     //! Pointer to the previously displayed image pixmap
     std::unique_ptr<QGraphicsPixmapItem> recentImage;
     QTimer *refreshTimer = nullptr;
-    QNetworkReply *reply = nullptr;
     //! Surface to store the image data
     QGraphicsScene *scene = nullptr;
     Ui::MWWebcamDisplay *ui = nullptr;
     std::unique_ptr<QUrl> webcamURL;
 
 private slots:
-    void AuthenticationRequired(QNetworkReply*, QAuthenticator *argAuthenticator);
+    void AuthenticationRequired(QNetworkReply *argReply, QAuthenticator *argAuthenticator);
     void HttpFinished();
-    void SSLErrors(QNetworkReply*, const QList<QSslError> &errors);
+    void SSLErrors(QNetworkReply *argReply, const QList<QSslError> &errors);
     void StartRequest();
 };
 
