@@ -27,15 +27,17 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
     ui{new Ui::MWWebcamDisplay},
     webcamURL{new QUrl{argWebcamURL}}
 {
+    qnam = new QNetworkAccessManager{this};
+
     ui->setupUi(this);
     scene = new QGraphicsScene{this};
     ui->GVImageDisplay->setScene(scene);
     this->setWindowTitle(tr("WebcamDisplay: ") + webcamURL->toString());
 
-    connect( &qnam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
-             this, SLOT( AuthenticationRequired( QNetworkReply*, QAuthenticator* ) ) );
-    connect( &qnam, SIGNAL( sslErrors( QNetworkReply*, QList< QSslError > ) ),
-             this, SLOT( SSLErrors( QNetworkReply*, QList< QSslError > ) ) );
+    connect(qnam, &QNetworkAccessManager::authenticationRequired,
+            this, &MWWebcamDisplay::AuthenticationRequired);
+    connect(qnam, &QNetworkAccessManager::sslErrors,
+            this, &MWWebcamDisplay::SSLErrors);
 
     refreshTimer = new QTimer{this};
     connect(refreshTimer, &QTimer::timeout,
@@ -108,7 +110,7 @@ void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors 
 }
 
 void MWWebcamDisplay::StartRequest() {
-    reply = qnam.get(QNetworkRequest{*webcamURL});
+    reply = qnam->get(QNetworkRequest{*webcamURL});
 
     connect( reply, SIGNAL( finished() ), this, SLOT( HttpFinished() ) );
 }

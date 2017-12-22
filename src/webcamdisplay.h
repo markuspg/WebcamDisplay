@@ -49,7 +49,7 @@ private:
     std::unique_ptr< QByteArray > byteArray = nullptr;
     std::unique_ptr< QGraphicsPixmapItem > currentImage = nullptr;  //! Pointer to the currently displayed image pixmap
     bool httpRequestAborted = false;
-    QNetworkAccessManager qnam;
+    QNetworkAccessManager *qnam = nullptr;
     std::unique_ptr< QGraphicsPixmapItem > recentImage = nullptr;   //! Pointer to the previously displayed image pixmap
     QTimer *refreshTimer = nullptr;
     QNetworkReply *reply = nullptr;
