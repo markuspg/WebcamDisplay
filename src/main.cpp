@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Markus Prasser
+ * Copyright 2015-2017 Markus Prasser
  *
  * This file is part of WebcamDisplay.
  *
