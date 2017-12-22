@@ -111,14 +111,14 @@ void MWWebcamDisplay::SSLErrors(QNetworkReply *argReply,
                                 const QList<QSslError> &errors) {
     QString errorString;
     for (auto cit = errors.constBegin(); cit != errors.constEnd(); ++cit) {
-        if ( !errorString.isEmpty() ) {
-            errorString += ", ";
+        if (!errorString.isEmpty()) {
+            errorString += "\n";
         }
         errorString += cit->errorString();
     }
 
     if (QMessageBox::warning(this, tr("HTTP"),
-                               tr("One or more SSL errors occurred: %1").arg(errorString),
+                               tr("One or more SSL errors occurred:\n%1").arg(errorString),
                                QMessageBox::Ignore | QMessageBox::Abort)
         == QMessageBox::Ignore) {
         argReply->ignoreSslErrors();
