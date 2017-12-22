@@ -95,12 +95,12 @@ void MWWebcamDisplay::HttpFinished() {
         }
     }
 
-    byteArray.reset(new QByteArray{reply->readAll()});
+    const QByteArray replyByteArray{reply->readAll()};
     reply->deleteLater();
     reply = nullptr;
 
     QPixmap image;
-    image.loadFromData(*byteArray);
+    image.loadFromData(replyByteArray);
     recentImage.reset(currentImage.release());
     currentImage.reset(scene->addPixmap(image));
     scene->removeItem(recentImage.get());

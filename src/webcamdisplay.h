@@ -49,7 +49,6 @@ public:
     MWWebcamDisplay& operator=(MWWebcamDisplay &&argWebcamDisplay) = delete;
 
 private:
-    std::unique_ptr<QByteArray> byteArray;
     //! Pointer to the currently displayed image pixmap
     std::unique_ptr<QGraphicsPixmapItem> currentImage;
     bool httpRequestAborted = false;
