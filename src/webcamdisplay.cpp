@@ -61,27 +61,29 @@ MWWebcamDisplay::~MWWebcamDisplay() {
 void MWWebcamDisplay::AuthenticationRequired(QNetworkReply*, QAuthenticator *argAuthenticator) {
     QDialog dialog;
     Ui::Dialog ui;
-    ui.setupUi( &dialog );
+    ui.setupUi(&dialog);
     ui.LSiteDescription->setText(tr("%1 at %2").arg(argAuthenticator->realm()).arg(webcamURL->host()));
 
     ui.LEUsername->setText(webcamURL->userName());
     ui.LEPassword->setText(webcamURL->password());
 
-    if ( dialog.exec() == QDialog::Accepted ) {
-        argAuthenticator->setUser( ui.LEUsername->text() );
-        argAuthenticator->setPassword( ui.LEPassword->text() );
+    if (dialog.exec() == QDialog::Accepted) {
+        argAuthenticator->setUser(ui.LEUsername->text());
+        argAuthenticator->setPassword(ui.LEPassword->text());
     }
 }
 
 void MWWebcamDisplay::HttpFinished() {
-    QVariant redirectionTarget = reply->attribute( QNetworkRequest::RedirectionTargetAttribute );
-    if ( reply->error() ) {
-        QMessageBox::information( this, tr( "HTTP" ), tr( "Download failed: %1." ).arg( reply->errorString() ) );
-    }
-    else if ( !redirectionTarget.isNull() ) {
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (reply->error()) {
+        QMessageBox::information(this, tr("HTTP"),
+                                 tr("Download failed: %1.").arg(reply->errorString()));
+    } else if (!redirectionTarget.isNull()) {
         QUrl newURL = webcamURL->resolved(redirectionTarget.toUrl());
-        if ( QMessageBox::question( this, tr( "HTTP" ), tr( "Redirect to '%1'?" ).arg( newURL.toString() ),
-                                    QMessageBox::No | QMessageBox::Yes ) == QMessageBox::Yes ) {
+        if (QMessageBox::question(this, tr("HTTP"),
+                                  tr("Redirect to '%1'?").arg(newURL.toString()),
+                                  QMessageBox::No | QMessageBox::Yes)
+            == QMessageBox::Yes) {
             webcamURL.reset(new QUrl{newURL});
             reply->deleteLater();
             reply = nullptr;
@@ -89,13 +91,13 @@ void MWWebcamDisplay::HttpFinished() {
         }
     }
 
-    byteArray.reset( new QByteArray{ reply->readAll() } );
+    byteArray.reset(new QByteArray{reply->readAll()});
     reply->deleteLater();
     reply = nullptr;
 
     QPixmap image;
-    image.loadFromData( *byteArray );
-    recentImage.reset( currentImage.release() );
+    image.loadFromData(*byteArray);
+    recentImage.reset(currentImage.release());
     currentImage.reset(scene->addPixmap(image));
     scene->removeItem(recentImage.get());
     ui->GVImageDisplay->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
@@ -103,16 +105,16 @@ void MWWebcamDisplay::HttpFinished() {
 
 void MWWebcamDisplay::SSLErrors(QNetworkReply*, const QList<QSslError> &errors) {
     QString errorString;
-    foreach ( const QSslError &error, errors ) {
+    for (auto cit = errors.constBegin(); cit != errors.constEnd(); ++cit) {
         if ( !errorString.isEmpty() ) {
             errorString += ", ";
         }
-        errorString += error.errorString();
+        errorString += cit->errorString();
     }
 
-    if ( QMessageBox::warning( this, tr( "HTTP" ),
-                               tr( "One or more SSL errors occurred: %1" ).arg( errorString ),
-                               QMessageBox::Ignore | QMessageBox::Abort ) == QMessageBox::Ignore ) {
+    if (QMessageBox::warning(this, tr("HTTP"),
+                               tr("One or more SSL errors occurred: %1").arg(errorString),
+                               QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore) {
         reply->ignoreSslErrors();
     }
 }
@@ -120,5 +122,6 @@ void MWWebcamDisplay::SSLErrors(QNetworkReply*, const QList<QSslError> &errors) 
 void MWWebcamDisplay::StartRequest() {
     reply = qnam->get(QNetworkRequest{*webcamURL});
 
-    connect( reply, SIGNAL( finished() ), this, SLOT( HttpFinished() ) );
+    connect(reply, &QNetworkReply::finished,
+            this, &MWWebcamDisplay::HttpFinished);
 }
