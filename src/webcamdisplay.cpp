@@ -21,6 +21,14 @@
 #include "ui_webcamdisplay.h"
 #include "ui_authenticationdialog.h"
 
+#include <QAuthenticator>
+#include <QGraphicsPixmapItem>
+#include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QTimer>
+#include <QUrl>
+
 MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
                                  QWidget *argParent) :
     QMainWindow{argParent},
@@ -50,7 +58,7 @@ MWWebcamDisplay::~MWWebcamDisplay() {
     delete ui;
 }
 
-void MWWebcamDisplay::AuthenticationRequired( QNetworkReply*, QAuthenticator *argAuthenticator ) {
+void MWWebcamDisplay::AuthenticationRequired(QNetworkReply*, QAuthenticator *argAuthenticator) {
     QDialog dialog;
     Ui::Dialog ui;
     ui.setupUi( &dialog );
@@ -93,7 +101,7 @@ void MWWebcamDisplay::HttpFinished() {
     ui->GVImageDisplay->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
-void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors ) {
+void MWWebcamDisplay::SSLErrors(QNetworkReply*, const QList<QSslError> &errors) {
     QString errorString;
     foreach ( const QSslError &error, errors ) {
         if ( !errorString.isEmpty() ) {

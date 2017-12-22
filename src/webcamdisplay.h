@@ -20,13 +20,16 @@
 #ifndef WEBCAMDISPLAY_H
 #define WEBCAMDISPLAY_H
 
-#include <QGraphicsScene>
 #include <QMainWindow>
 
-#include <QtNetwork>
-#include <QtWidgets>
-
 #include <memory>
+
+class QAuthenticator;
+class QGraphicsPixmapItem;
+class QGraphicsScene;
+class QNetworkAccessManager;
+class QNetworkReply;
+class QSslError;
 
 namespace Ui {
 class MWWebcamDisplay;
@@ -38,19 +41,21 @@ class MWWebcamDisplay final : public QMainWindow {
 public:
     explicit MWWebcamDisplay(const QString &argWebcamURL,
                              QWidget *argParent = nullptr);
-    MWWebcamDisplay( const MWWebcamDisplay &argWebcamDisplay ) = delete;
-    MWWebcamDisplay( MWWebcamDisplay &&argWebcamDisplay ) = delete;
-    ~MWWebcamDisplay();
+    MWWebcamDisplay(const MWWebcamDisplay &argWebcamDisplay) = delete;
+    MWWebcamDisplay(MWWebcamDisplay &&argWebcamDisplay) = delete;
+    virtual ~MWWebcamDisplay();
 
-    MWWebcamDisplay& operator=( const MWWebcamDisplay &argWebcamDisplay ) = delete;
-    MWWebcamDisplay& operator=( MWWebcamDisplay &&argWebcamDisplay ) = delete;
+    MWWebcamDisplay& operator=(const MWWebcamDisplay &argWebcamDisplay) = delete;
+    MWWebcamDisplay& operator=(MWWebcamDisplay &&argWebcamDisplay) = delete;
 
 private:
-    std::unique_ptr< QByteArray > byteArray = nullptr;
-    std::unique_ptr< QGraphicsPixmapItem > currentImage = nullptr;  //! Pointer to the currently displayed image pixmap
+    std::unique_ptr<QByteArray> byteArray;
+    //! Pointer to the currently displayed image pixmap
+    std::unique_ptr<QGraphicsPixmapItem> currentImage;
     bool httpRequestAborted = false;
     QNetworkAccessManager *qnam = nullptr;
-    std::unique_ptr< QGraphicsPixmapItem > recentImage = nullptr;   //! Pointer to the previously displayed image pixmap
+    //! Pointer to the previously displayed image pixmap
+    std::unique_ptr<QGraphicsPixmapItem> recentImage;
     QTimer *refreshTimer = nullptr;
     QNetworkReply *reply = nullptr;
     //! Surface to store the image data
@@ -59,9 +64,9 @@ private:
     std::unique_ptr<QUrl> webcamURL;
 
 private slots:
-    void AuthenticationRequired( QNetworkReply*, QAuthenticator *argAuthenticator );
+    void AuthenticationRequired(QNetworkReply*, QAuthenticator *argAuthenticator);
     void HttpFinished();
-    void SSLErrors( QNetworkReply*, const QList<QSslError> &errors );
+    void SSLErrors(QNetworkReply*, const QList<QSslError> &errors);
     void StartRequest();
 };
 

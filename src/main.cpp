@@ -18,9 +18,9 @@
  */
 
 #include "webcamdisplay.h"
+
 #include <QApplication>
 #include <QMessageBox>
-#include <QObject>
 
 int main( int argc, char *argv[] ) {
     QApplication a{ argc, argv };
