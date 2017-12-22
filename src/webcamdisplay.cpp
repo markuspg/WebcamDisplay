@@ -27,9 +27,9 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
     ui{new Ui::MWWebcamDisplay},
     webcamURL{new QUrl{argWebcamURL}}
 {
-
-    ui->setupUi( this );
-    ui->GVImageDisplay->setScene( &scene );
+    ui->setupUi(this);
+    scene = new QGraphicsScene{this};
+    ui->GVImageDisplay->setScene(scene);
     this->setWindowTitle(tr("WebcamDisplay: ") + webcamURL->toString());
 
     connect( &qnam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
@@ -44,7 +44,7 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
 }
 
 MWWebcamDisplay::~MWWebcamDisplay() {
-    scene.removeItem( currentImage.get() );
+    scene->removeItem(currentImage.get());
     delete ui;
 }
 
@@ -86,9 +86,9 @@ void MWWebcamDisplay::HttpFinished() {
     QPixmap image;
     image.loadFromData( *byteArray );
     recentImage.reset( currentImage.release() );
-    currentImage.reset( scene.addPixmap( image ) );
-    scene.removeItem( recentImage.get() );
-    ui->GVImageDisplay->fitInView( scene.itemsBoundingRect(), Qt::KeepAspectRatio );
+    currentImage.reset(scene->addPixmap(image));
+    scene->removeItem(recentImage.get());
+    ui->GVImageDisplay->fitInView(scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors ) {

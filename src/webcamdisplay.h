@@ -53,7 +53,8 @@ private:
     std::unique_ptr< QGraphicsPixmapItem > recentImage = nullptr;   //! Pointer to the previously displayed image pixmap
     QTimer *refreshTimer = nullptr;
     QNetworkReply *reply = nullptr;
-    QGraphicsScene scene;                           //! Surface to store the image data
+    //! Surface to store the image data
+    QGraphicsScene *scene = nullptr;
     Ui::MWWebcamDisplay *ui = nullptr;
     std::unique_ptr<QUrl> webcamURL;
 
