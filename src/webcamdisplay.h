@@ -55,7 +55,7 @@ private:
     QNetworkReply *reply = nullptr;
     QGraphicsScene scene;                           //! Surface to store the image data
     Ui::MWWebcamDisplay *ui = nullptr;
-    QUrl webcamURL;
+    std::unique_ptr<QUrl> webcamURL;
 
 private slots:
     void AuthenticationRequired( QNetworkReply*, QAuthenticator *argAuthenticator );

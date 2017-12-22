@@ -25,12 +25,12 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
                                  QWidget *argParent) :
     QMainWindow{argParent},
     ui{new Ui::MWWebcamDisplay},
-    webcamURL{argWebcamURL}
+    webcamURL{new QUrl{argWebcamURL}}
 {
 
     ui->setupUi( this );
     ui->GVImageDisplay->setScene( &scene );
-    this->setWindowTitle( tr( "WebcamDisplay: " ) + webcamURL.toString() );
+    this->setWindowTitle(tr("WebcamDisplay: ") + webcamURL->toString());
 
     connect( &qnam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
              this, SLOT( AuthenticationRequired( QNetworkReply*, QAuthenticator* ) ) );
@@ -52,10 +52,10 @@ void MWWebcamDisplay::AuthenticationRequired( QNetworkReply*, QAuthenticator *ar
     QDialog dialog;
     Ui::Dialog ui;
     ui.setupUi( &dialog );
-    ui.LSiteDescription->setText( tr( "%1 at %2" ).arg( argAuthenticator->realm() ).arg( webcamURL.host() ) );
+    ui.LSiteDescription->setText(tr("%1 at %2").arg(argAuthenticator->realm()).arg(webcamURL->host()));
 
-    ui.LEUsername->setText( webcamURL.userName() );
-    ui.LEPassword->setText( webcamURL.password() );
+    ui.LEUsername->setText(webcamURL->userName());
+    ui.LEPassword->setText(webcamURL->password());
 
     if ( dialog.exec() == QDialog::Accepted ) {
         argAuthenticator->setUser( ui.LEUsername->text() );
@@ -69,10 +69,10 @@ void MWWebcamDisplay::HttpFinished() {
         QMessageBox::information( this, tr( "HTTP" ), tr( "Download failed: %1." ).arg( reply->errorString() ) );
     }
     else if ( !redirectionTarget.isNull() ) {
-        QUrl newURL = webcamURL.resolved( redirectionTarget.toUrl() );
+        QUrl newURL = webcamURL->resolved(redirectionTarget.toUrl());
         if ( QMessageBox::question( this, tr( "HTTP" ), tr( "Redirect to '%1'?" ).arg( newURL.toString() ),
                                     QMessageBox::No | QMessageBox::Yes ) == QMessageBox::Yes ) {
-            webcamURL = newURL;
+            webcamURL.reset(new QUrl{newURL});
             reply->deleteLater();
             reply = nullptr;
             return;
@@ -108,7 +108,7 @@ void MWWebcamDisplay::SSLErrors( QNetworkReply*, const QList<QSslError> &errors 
 }
 
 void MWWebcamDisplay::StartRequest() {
-    reply = qnam.get( QNetworkRequest( webcamURL ) );
+    reply = qnam.get(QNetworkRequest{*webcamURL});
 
     connect( reply, SIGNAL( finished() ), this, SLOT( HttpFinished() ) );
 }
