@@ -51,7 +51,6 @@ public:
 private:
     //! Pointer to the currently displayed image pixmap
     std::unique_ptr<QGraphicsPixmapItem> currentImage;
-    bool httpRequestAborted = false;
     QNetworkAccessManager *qnam = nullptr;
     //! Pointer to the previously displayed image pixmap
     std::unique_ptr<QGraphicsPixmapItem> recentImage;
