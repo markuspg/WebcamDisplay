@@ -21,11 +21,11 @@
 #include "ui_webcamdisplay.h"
 #include "ui_authenticationdialog.h"
 
-MWWebcamDisplay::MWWebcamDisplay( const QString &argWebcamURL, QWidget *argParent ) :
-    QMainWindow{ argParent },
-    refreshTimer{ this },
-    ui{ new Ui::MWWebcamDisplay },
-    webcamURL{ argWebcamURL }
+MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
+                                 QWidget *argParent) :
+    QMainWindow{argParent},
+    ui{new Ui::MWWebcamDisplay},
+    webcamURL{argWebcamURL}
 {
 
     ui->setupUi( this );
@@ -37,9 +37,10 @@ MWWebcamDisplay::MWWebcamDisplay( const QString &argWebcamURL, QWidget *argParen
     connect( &qnam, SIGNAL( sslErrors( QNetworkReply*, QList< QSslError > ) ),
              this, SLOT( SSLErrors( QNetworkReply*, QList< QSslError > ) ) );
 
-    connect( &refreshTimer, &QTimer::timeout,
-             this, &MWWebcamDisplay::StartRequest );
-    refreshTimer.start( 1000 );
+    refreshTimer = new QTimer{this};
+    connect(refreshTimer, &QTimer::timeout,
+            this, &MWWebcamDisplay::StartRequest);
+    refreshTimer->start(1024);
 }
 
 MWWebcamDisplay::~MWWebcamDisplay() {

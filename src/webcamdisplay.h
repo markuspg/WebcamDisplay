@@ -36,7 +36,8 @@ class MWWebcamDisplay final : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MWWebcamDisplay( const QString &argWebcamURL, QWidget *argParent = nullptr );
+    explicit MWWebcamDisplay(const QString &argWebcamURL,
+                             QWidget *argParent = nullptr);
     MWWebcamDisplay( const MWWebcamDisplay &argWebcamDisplay ) = delete;
     MWWebcamDisplay( MWWebcamDisplay &&argWebcamDisplay ) = delete;
     ~MWWebcamDisplay();
@@ -50,10 +51,10 @@ private:
     bool httpRequestAborted = false;
     QNetworkAccessManager qnam;
     std::unique_ptr< QGraphicsPixmapItem > recentImage = nullptr;   //! Pointer to the previously displayed image pixmap
-    QTimer refreshTimer;
+    QTimer *refreshTimer = nullptr;
     QNetworkReply *reply = nullptr;
     QGraphicsScene scene;                           //! Surface to store the image data
-    Ui::MWWebcamDisplay *ui;
+    Ui::MWWebcamDisplay *ui = nullptr;
     QUrl webcamURL;
 
 private slots:
