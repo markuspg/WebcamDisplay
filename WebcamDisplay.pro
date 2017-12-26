@@ -20,8 +20,6 @@ HEADERS  += src/webcamdisplay.h
 FORMS    += ui/webcamdisplay.ui \
     ui/authenticationdialog.ui
 
-QMAKE_CXXFLAGS += -std=c++11
-
 DISTFILES += \
     codingStyle.astylerc \
 
