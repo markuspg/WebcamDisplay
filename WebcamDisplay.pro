@@ -22,6 +22,9 @@ FORMS    += ui/webcamdisplay.ui \
 
 QMAKE_CXXFLAGS += -std=c++11
 
+DISTFILES += \
+    codingStyle.astylerc \
+
 OTHER_FILES += \
     CHANGELOG.md \
     LICENSE \

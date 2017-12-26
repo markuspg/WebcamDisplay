@@ -33,7 +33,7 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
                                  QWidget *argParent) :
     QMainWindow{argParent},
     ui{new Ui::MWWebcamDisplay},
-    webcamURL{new QUrl{argWebcamURL}}
+webcamURL{new QUrl{argWebcamURL}}
 {
     qnam = new QNetworkAccessManager{this};
 
@@ -53,7 +53,8 @@ MWWebcamDisplay::MWWebcamDisplay(const QString &argWebcamURL,
     refreshTimer->start(1024);
 }
 
-MWWebcamDisplay::~MWWebcamDisplay() {
+MWWebcamDisplay::~MWWebcamDisplay()
+{
     if (currentImage) {
         scene->removeItem(currentImage.get());
     }
@@ -61,7 +62,8 @@ MWWebcamDisplay::~MWWebcamDisplay() {
 }
 
 void MWWebcamDisplay::AuthenticationRequired(QNetworkReply *argReply,
-                                             QAuthenticator *argAuthenticator) {
+                                             QAuthenticator *argAuthenticator)
+{
     Q_UNUSED(argReply)
 
     QDialog dialog;
@@ -78,8 +80,9 @@ void MWWebcamDisplay::AuthenticationRequired(QNetworkReply *argReply,
     }
 }
 
-void MWWebcamDisplay::HttpFinished() {
-    QNetworkReply * reply = qobject_cast<QNetworkReply*>(sender());
+void MWWebcamDisplay::HttpFinished()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if (reply->error()) {
         QMessageBox::information(this, tr("HTTP"),
@@ -89,7 +92,7 @@ void MWWebcamDisplay::HttpFinished() {
         if (QMessageBox::question(this, tr("HTTP"),
                                   tr("Redirect to '%1'?").arg(newURL.toString()),
                                   QMessageBox::No | QMessageBox::Yes)
-            == QMessageBox::Yes) {
+                == QMessageBox::Yes) {
             webcamURL.reset(new QUrl{newURL});
             reply->deleteLater();
             reply = nullptr;
@@ -112,7 +115,8 @@ void MWWebcamDisplay::HttpFinished() {
 }
 
 void MWWebcamDisplay::SSLErrors(QNetworkReply *argReply,
-                                const QList<QSslError> &errors) {
+                                const QList<QSslError> &errors)
+{
     QString errorString;
     for (auto cit = errors.constBegin(); cit != errors.constEnd(); ++cit) {
         if (!errorString.isEmpty()) {
@@ -122,15 +126,16 @@ void MWWebcamDisplay::SSLErrors(QNetworkReply *argReply,
     }
 
     if (QMessageBox::warning(this, tr("HTTP"),
-                               tr("One or more SSL errors occurred:\n%1").arg(errorString),
-                               QMessageBox::Ignore | QMessageBox::Abort)
-        == QMessageBox::Ignore) {
+                             tr("One or more SSL errors occurred:\n%1").arg(errorString),
+                             QMessageBox::Ignore | QMessageBox::Abort)
+            == QMessageBox::Ignore) {
         argReply->ignoreSslErrors();
     }
 }
 
-void MWWebcamDisplay::StartRequest() {
-    QNetworkReply * const reply = qnam->get(QNetworkRequest{*webcamURL});
+void MWWebcamDisplay::StartRequest()
+{
+    QNetworkReply *const reply = qnam->get(QNetworkRequest{*webcamURL});
 
     connect(reply, &QNetworkReply::finished,
             this, &MWWebcamDisplay::HttpFinished);

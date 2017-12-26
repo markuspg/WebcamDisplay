@@ -35,7 +35,8 @@ namespace Ui {
 class MWWebcamDisplay;
 }
 
-class MWWebcamDisplay final : public QMainWindow {
+class MWWebcamDisplay final : public QMainWindow
+{
     Q_OBJECT
 
 public:
@@ -45,8 +46,8 @@ public:
     MWWebcamDisplay(MWWebcamDisplay &&argWebcamDisplay) = delete;
     virtual ~MWWebcamDisplay();
 
-    MWWebcamDisplay& operator=(const MWWebcamDisplay &argWebcamDisplay) = delete;
-    MWWebcamDisplay& operator=(MWWebcamDisplay &&argWebcamDisplay) = delete;
+    MWWebcamDisplay &operator=(const MWWebcamDisplay &argWebcamDisplay) = delete;
+    MWWebcamDisplay &operator=(MWWebcamDisplay &&argWebcamDisplay) = delete;
 
 private:
     //! Pointer to the currently displayed image pixmap
