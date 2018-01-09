@@ -69,7 +69,7 @@ void MWWebcamDisplay::AuthenticationRequired(QNetworkReply *argReply,
     QDialog dialog;
     Ui::Dialog ui;
     ui.setupUi(&dialog);
-    ui.LSiteDescription->setText(tr("%1 at %2").arg(argAuthenticator->realm()).arg(webcamURL->host()));
+    ui.LSiteDescription->setText(tr("%1 at %2").arg(argAuthenticator->realm(), webcamURL->host()));
 
     ui.LEUsername->setText(webcamURL->userName());
     ui.LEPassword->setText(webcamURL->password());
